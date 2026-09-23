@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Term Planner — 7th Term CCE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2F4F7;
+    --panel: #FFFFFF;
+    --ink: #172233;
+    --ink-soft: #56637A;
+    --line: #D9DFE7;
+    --line-soft: #E7EBF0;
+    --navy: #1E3A5F;
+    --navy-ink: #ffffff;
+    --amber: #C97A2B;
+    --conflict: #C0392B;
+    --conflict-bg: #FDEDEA;
+
+    --sub-IML: #6B4E8E;
+    --sub-ADA: #B5762B;
+    --sub-AI:  #1E5F8C;
+    --sub-DB:  #2A7A6F;
+    --sub-OS:  #52713F;
+    --sub-AC:  #A6462F;
+    --sub-CUSTOM: #495467;
+
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161D;
+      --panel: #191F29;
+      --ink: #EDF0F4;
+      --ink-soft: #9AA6B8;
+      --line: #2B3341;
+      --line-soft: #232B37;
+      --navy: #3A6EA5;
+      --navy-ink: #0C1117;
+      --conflict: #E5766A;
+      --conflict-bg: #2E1E1C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161D;
+    --panel: #191F29;
+    --ink: #EDF0F4;
+    --ink-soft: #9AA6B8;
+    --line: #2B3341;
+    --line-soft: #232B37;
+    --navy: #3A6EA5;
+    --navy-ink: #0C1117;
+    --conflict: #E5766A;
+    --conflict-bg: #2E1E1C;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  }
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+  header.top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 26px;
+  }
+  header.top .eyebrow {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin: 0 0 6px;
+  }
+  header.top h1 {
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .top-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  button, select, input {
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .btn {
+    background: var(--panel);
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform .08s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.primary {
+    background: var(--navy);
+    color: var(--navy-ink);
+    border-color: var(--navy);
+  }
+  .btn.ghost {
+    border-color: var(--line);
+    color: var(--ink-soft);
+  }
+  .btn.small { padding: 6px 11px; font-size: 12.5px; border-radius: 6px; }
+
+  section.block { margin-bottom: 34px; }
+  .block h2 {
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .block h2 .n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 11px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .quickfill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+  .quickfill span { color: var(--ink-soft); font-size: 13.5px; }
+  .quickfill select {
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 10px;
+    background: var(--panel);
+    color: var(--ink);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--card-color, var(--ink));
+    border-radius: 10px;
+    padding: 14px 16px 16px;
+  }
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 15.5px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .card h3 small {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .field { margin-bottom: 9px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .field select {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .field select:focus, .quickfill select:focus, input:focus {
+    outline: 2px solid var(--navy);
+    outline-offset: 1px;
+  }
+
+  .grid-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+  table.grid {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 720px;
+  }
+  table.grid th, table.grid td {
+    border: 1px solid var(--line-soft);
+    padding: 0;
+    vertical-align: top;
+  }
+  table.grid th {
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 6px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+  }
+  table.grid .timecol {
+    width: 84px;
+    background: var(--line-soft);
+    color: var(--ink-soft);
+    font-size: 11.5px;
+    text-align: center;
+    padding: 10px 4px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  table.grid td.cell {
+    height: 64px;
+    min-width: 130px;
+    position: relative;
+  }
+  .sess {
+    position: absolute;
+    inset: 3px;
+    border-radius: 6px;
+    padding: 5px 7px;
+    color: #fff;
+    font-size: 11.5px;
+    line-height: 1.35;
+    overflow: hidden;
+    background: var(--s-color);
+  }
+  .sess b { display: block; font-size: 12px; font-weight: 700; }
+  .sess .t { opacity: .88; }
+  .sess.conflict {
+    outline: 2px solid var(--conflict);
+    outline-offset: -2px;
+  }
+  .sess .rm {
+    position: absolute; top: 2px; right: 3px;
+    background: rgba(0,0,0,.25); border: none; color: #fff;
+    width: 15px; height: 15px; border-radius: 50%;
+    font-size: 10px; line-height: 1; cursor: pointer; display: none;
+  }
+  .sess:hover .rm { display: block; }
+
+  .sess .bw-tag {
+    position: absolute; bottom: 3px; right: 5px;
+    font-size: 8.5px; letter-spacing: .02em;
+    background: rgba(0,0,0,.32); padding: 1px 5px; border-radius: 3px;
+  }
+  .sess.biweekly-single {
+    background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.3) 0 5px, transparent 5px 10px);
+  }
+
+  .sess-split {
+    position: absolute; inset: 3px;
+    border-radius: 6px;
+    overflow: hidden;
+    color: #fff;
+    font-size: 10px;
+  }
+  .sess-split .tri { position: absolute; inset: 0; }
+  .sess-split .tri-a { clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .sess-split .tri-b { clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+  .sess-split .seam {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(135deg, transparent calc(50% - 1.4px), rgba(255,255,255,.95) 50%, transparent calc(50% + 1.4px));
+  }
+  .sess-split .lab-a { position: absolute; top: 4px; left: 5px; font-weight: 700; }
+  .sess-split .lab-b { position: absolute; bottom: 3px; right: 5px; font-weight: 700; text-align: right; }
+  .sess-split .bw-badge {
+    position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+    font-size: 8px; letter-spacing: .03em;
+    background: rgba(0,0,0,.4); padding: 1px 5px; border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+  .conflicts {
+    margin-top: 14px;
+    border: 1.5px solid var(--conflict);
+    background: var(--conflict-bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--conflict);
+    font-size: 13.5px;
+  }
+  .conflicts h4 { margin: 0 0 6px; font-size: 13px; }
+  .conflicts ul { margin: 0; padding-left: 18px; }
+
+  .customform {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .customform .field { margin: 0; }
+  .customform .field select, .customform .field input {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .customform .add-btn { align-self: end; }
+  @media (max-width: 800px) {
+    .customform { grid-template-columns: 1fr 1fr; }
+  }
+
+  footer.note {
+    margin-top: 30px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+
+  @media print {
+    body { background: #fff; }
+    header.top .top-actions, .quickfill, .cards, .conflicts, .customform, footer.note, section.block h2 { display: none !important; }
+    .grid-scroll { border: none; }
+    table.grid th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sess { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">Computer &amp; Communications Engineering — Fall 2026</p>
+      <h1>7th Term Planner</h1>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost small" id="printBtn">Print / save PDF</button>
+      <button class="btn ghost small" id="resetBtn">Clear selections</button>
+    </div>
+  </header>
+
+  <section class="block">
+    <h2><span class="n">1</span>Start from your group</h2>
+    <div class="quickfill">
+      <span>Auto-fill lectures for</span>
+      <select id="groupSelect">
+        <option value="">— choose a group —</option>
+        <option value="G1">G1</option>
+        <option value="G2">G2</option>
+        <option value="G3">G3</option>
+        <option value="G4">G4</option>
+        <option value="G5">G5</option>
+      </select>
+      <button class="btn small" id="applyGroup">Apply</button>
+      <span style="margin-left:auto; color:var(--ink-soft);">This sets your official lecture times. Pick your own tutorial / lab section below.</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="n">2</span>Choose each section</h2>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="block">
+    <h2><span class="n">3</span>Your week</h2>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 12px;">
+      A hatched block or a "biweekly" tag means that session only meets every other week.
+      A cell split by a diagonal line alternates between two different sessions week to week.
+    </p>
+    <div class="grid-scroll">
+      <table class="grid" id="gridTable"></table>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="conflicts" id="conflicts" style="display:none;"></div>
+  </section>
+
+  <section class="block">
+    <h2><span class="n">4</span>Add something not on this list</h2>
+    <div class="customform">
+      <div class="field">
+        <label>Course</label>
+        <input id="cSubject" placeholder="e.g. Elective 1">
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <select id="cType">
+          <option>Lecture</option>
+          <option>Tutorial</option>
+          <option>Lab</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Day</label>
+        <select id="cDay"></select>
+      </div>
+      <div class="field">
+        <label>Period</label>
+        <select id="cPeriod"></select>
+      </div>
+      <div class="field">
+        <label>Room (optional)</label>
+        <input id="cPlace" placeholder="e.g. C401">
+      </div>
+      <div class="field">
+        <label>Frequency</label>
+        <label style="display:flex; align-items:center; gap:6px; font-weight:500; font-size:13px; color:var(--ink); border:1.5px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); cursor:pointer;">
+          <input type="checkbox" id="cBiweekly" style="width:auto; margin:0;"> Biweekly
+        </label>
+      </div>
+      <button class="btn primary add-btn" id="addCustom">Add to grid</button>
+    </div>
+  </section>
+
+  <footer class="note">
+    Section times, rooms and instructors are transcribed from the official 7th-term schedule (Fall 2026). Where a slot listed two rooms for the
+    same tutorial, they're offered as Sec 1 / Sec 2 — pick the one you're assigned to. Where a slot listed two different sessions for the same
+    group (e.g. a lab and a tutorial, or two different labs), that's a diagonally-split cell in the original table, meaning the two alternate on
+    odd/even weeks — shown here with a diagonal split rather than as a conflict. Introduction to Machine Learning labs run biweekly on their own
+    and are marked with a hatched block. Double-check all of this against the original schedule before relying on it for registration. Your
+    choices are saved in this browser only.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DAYS = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday"];
+  var PERIODS = [
+    {n:1,  label:"1–2",   time:"8:30 – 10:10"},
+    {n:3,  label:"3–4",   time:"10:20 – 12:00"},
+    {n:5,  label:"5–6",   time:"12:10 – 1:50"},
+    {n:7,  label:"7–8",   time:"2:00 – 3:40"},
+    {n:9,  label:"9–10",  time:"3:50 – 5:30"},
+    {n:11, label:"11–12", time:"5:40 – 7:20"}
+  ];
+
+  var SUBJECTS = [
+    {code:"IML", name:"Introduction to Machine Learning"},
+    {code:"ADA", name:"Analysis and Design of Algorithms"},
+    {code:"AI",  name:"Artificial Intelligence"},
+    {code:"DB",  name:"Database Systems"},
+    {code:"OS",  name:"Operating Systems"},
+    {code:"AC",  name:"Analog Communications"}
+  ];
+
+  // Each option: id, subject, type, group, day, period, place, instr
+  var DATA = [
+    // ---------- IML ----------
+    {subject:"IML",type:"Lecture",group:"G1",day:"Saturday",period:5,place:"H401",instr:"Dr. Ahmed Elsayed"},
+    {subject:"IML",type:"Lecture",group:"G2",day:"Saturday",period:3,place:"H401",instr:"Dr. Ahmed Elsayed"},
+    {subject:"IML",type:"Lecture",group:"G3",day:"Sunday",period:9,place:"H301",instr:"Dr. Ahmed Elsayed"},
+
+    {subject:"IML",type:"Tutorial",group:"G1",day:"Monday",period:5,place:"C401"},
+    {subject:"IML",type:"Tutorial",group:"G1",day:"Monday",period:5,place:"C402"},
+    {subject:"IML",type:"Tutorial",group:"G2",day:"Sunday",period:9,place:"C305"},
+    {subject:"IML",type:"Tutorial",group:"G2",day:"Sunday",period:9,place:"C306"},
+    {subject:"IML",type:"Tutorial",group:"G3",day:"Thursday",period:7,place:"C307"},
+    {subject:"IML",type:"Tutorial",group:"G3",day:"Thursday",period:7,place:"C401"},
+
+    {subject:"IML",type:"Lab",group:"G1",day:"Monday",period:7,place:"C401",biweekly:true},
+    {subject:"IML",type:"Lab",group:"G2",day:"Sunday",period:11,place:"C305",biweekly:true},
+    {subject:"IML",type:"Lab",group:"G3",day:"Thursday",period:9,place:"C307",biweekly:true},
+
+    // ---------- ADA ----------
+    {subject:"ADA",type:"Lecture",group:"G1",day:"Saturday",period:9,place:"H401",instr:"Dr. Ahmed Kosba"},
+    {subject:"ADA",type:"Lecture",group:"G2",day:"Tuesday",period:9,place:"H501",instr:"Dr. Ahmed Kosba"},
+    {subject:"ADA",type:"Lecture",group:"G3",day:"Saturday",period:3,place:"C302",instr:"Prof. Amr Elmasry"},
+    {subject:"ADA",type:"Lecture",group:"G4",day:"Saturday",period:5,place:"C302",instr:"Prof. Amr Elmasry"},
+    {subject:"ADA",type:"Lecture",group:"G5",day:"Saturday",period:7,place:"C302",instr:"Prof. Amr Elmasry"},
+
+    {subject:"ADA",type:"Tutorial",group:"G1",day:"Monday",period:3,place:"C401"},
+    {subject:"ADA",type:"Tutorial",group:"G2",day:"Wednesday",period:7,place:"C307"},
+    {subject:"ADA",type:"Tutorial",group:"G3",day:"Saturday",period:5,place:"C402"},
+    {subject:"ADA",type:"Tutorial",group:"G4",day:"Saturday",period:7,place:"C402"},
+    {subject:"ADA",type:"Tutorial",group:"G5",day:"Saturday",period:9,place:"C402"},
+
+    {subject:"ADA",type:"Lab",group:"G1",day:"Monday",period:3,place:"TBA"},
+    {subject:"ADA",type:"Lab",group:"G2",day:"Wednesday",period:7,place:"TBA"},
+    {subject:"ADA",type:"Lab",group:"G3",day:"Saturday",period:5,place:"TBA"},
+    {subject:"ADA",type:"Lab",group:"G4",day:"Saturday",period:7,place:"TBA"},
+    {subject:"ADA",type:"Lab",group:"G5",day:"Saturday",period:9,place:"TBA"},
+
+    // ---------- AI ----------
+    {subject:"AI",type:"Lecture",group:"G1",day:"Monday",period:1,place:"H301",instr:"Prof. Marwan Torki"},
+    {subject:"AI",type:"Lecture",group:"G3",day:"Wednesday",period:1,place:"H301",instr:"Prof. Marwan Torki"},
+
+    {subject:"AI",type:"Tutorial",group:"G1",day:"Sunday",period:1,place:"C404"},
+    {subject:"AI",type:"Tutorial",group:"G1",day:"Sunday",period:1,place:"C405"},
+    {subject:"AI",type:"Tutorial",group:"G3",day:"Wednesday",period:3,place:"C307"},
+    {subject:"AI",type:"Tutorial",group:"G3",day:"Wednesday",period:3,place:"C308"},
+
+    {subject:"AI",type:"Lab",group:"G1",day:"Sunday",period:3,place:"C404",biweekly:true},
+    {subject:"AI",type:"Lab",group:"G3",day:"Wednesday",period:5,place:"C307",biweekly:true},
+
+    // ---------- DB ----------
+    {subject:"DB",type:"Lecture",group:"G1",day:"Wednesday",period:9,place:"H301",instr:"Prof. Yousry Taha"},
+    {subject:"DB",type:"Lecture",group:"G2",day:"Wednesday",period:11,place:"H301",instr:"Prof. Yousry Taha"},
+    {subject:"DB",type:"Lecture",group:"G3",day:"Monday",period:9,place:"H301",instr:"Prof. Yousry Taha"},
+    {subject:"DB",type:"Lecture",group:"G4",day:"Monday",period:11,place:"H301",instr:"Prof. Yousry Taha"},
+    {subject:"DB",type:"Lecture",group:"G5",day:"Monday",period:11,place:"H301",instr:"Prof. Yousry Taha"},
+
+    {subject:"DB",type:"Lab",group:"G1",day:"Wednesday",period:3,place:"C309"},
+    {subject:"DB",type:"Lab",group:"G1",day:"Wednesday",period:5,place:"C309"},
+    {subject:"DB",type:"Lab",group:"G1",day:"Wednesday",period:7,place:"C309"},
+    {subject:"DB",type:"Lab",group:"G2",day:"Tuesday",period:5,place:"C501"},
+    {subject:"DB",type:"Lab",group:"G2",day:"Tuesday",period:7,place:"C501"},
+    {subject:"DB",type:"Lab",group:"G2",day:"Wednesday",period:9,place:"C307"},
+    {subject:"DB",type:"Lab",group:"G3",day:"Monday",period:5,place:"C308"},
+    {subject:"DB",type:"Lab",group:"G3",day:"Monday",period:7,place:"C308"},
+    {subject:"DB",type:"Lab",group:"G3",day:"Tuesday",period:1,place:"C307"},
+    {subject:"DB",type:"Lab",group:"G4",day:"Sunday",period:9,place:"C308"},
+    {subject:"DB",type:"Lab",group:"G4",day:"Monday",period:9,place:"C308"},
+    {subject:"DB",type:"Lab",group:"G4",day:"Tuesday",period:3,place:"C307"},
+    {subject:"DB",type:"Lab",group:"G5",day:"Tuesday",period:3,place:"C405"},
+    {subject:"DB",type:"Lab",group:"G5",day:"Tuesday",period:5,place:"C405"},
+    {subject:"DB",type:"Lab",group:"G5",day:"Tuesday",period:7,place:"C405"},
+
+    // ---------- OS ----------
+    {subject:"OS",type:"Lecture",group:"G1",day:"Thursday",period:3,place:"C202",instr:"Dr. Samia Hafez"},
+    {subject:"OS",type:"Lecture",group:"G2",day:"Thursday",period:5,place:"C202",instr:"Dr. Samia Hafez"},
+    {subject:"OS",type:"Lecture",group:"G3",day:"Tuesday",period:3,place:"C202",instr:"Dr. Samia Hafez"},
+    {subject:"OS",type:"Lecture",group:"G4",day:"Tuesday",period:1,place:"H301",instr:"Dr. Samia Hafez"},
+    {subject:"OS",type:"Lecture",group:"G5",day:"Tuesday",period:1,place:"H301",instr:"Dr. Samia Hafez"},
+
+    {subject:"OS",type:"Lab",group:"G1",day:"Wednesday",period:5,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G1",day:"Wednesday",period:7,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G2",day:"Tuesday",period:7,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G2",day:"Wednesday",period:9,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G3",day:"Monday",period:5,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G3",day:"Monday",period:7,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G4",day:"Sunday",period:9,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G4",day:"Monday",period:9,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G5",day:"Tuesday",period:3,place:"Lab"},
+    {subject:"OS",type:"Lab",group:"G5",day:"Tuesday",period:5,place:"Lab"},
+
+    // ---------- AC ----------
+    {subject:"AC",type:"Lecture",group:"G1",day:"Thursday",period:1,place:"C201",instr:"Dr. Mohamed Rezk"},
+    {subject:"AC",type:"Lecture",group:"G2",day:"Monday",period:5,place:"C202",instr:"Dr. Mohamed Rezk"},
+    {subject:"AC",type:"Lecture",group:"G3",day:"Sunday",period:5,place:"C103",instr:"Dr. Mohamed Salah"},
+    {subject:"AC",type:"Lecture",group:"G4",day:"Sunday",period:7,place:"H301",instr:"Dr. Mohamed Salah"},
+    {subject:"AC",type:"Lecture",group:"G5",day:"Sunday",period:7,place:"H301",instr:"Dr. Mohamed Salah"},
+
+    {subject:"AC",type:"Tutorial",group:"G1",day:"Thursday",period:5,place:"C307"},
+    {subject:"AC",type:"Tutorial",group:"G1",day:"Thursday",period:5,place:"C308"},
+    {subject:"AC",type:"Tutorial",group:"G2",day:"Thursday",period:3,place:"C307"},
+    {subject:"AC",type:"Tutorial",group:"G2",day:"Thursday",period:3,place:"C308"},
+    {subject:"AC",type:"Tutorial",group:"G3",day:"Sunday",period:7,place:"C404"},
+    {subject:"AC",type:"Tutorial",group:"G3",day:"Sunday",period:7,place:"C405"},
+    {subject:"AC",type:"Tutorial",group:"G4",day:"Sunday",period:5,place:"C404"},
+    {subject:"AC",type:"Tutorial",group:"G4",day:"Sunday",period:5,place:"C405"},
+    {subject:"AC",type:"Tutorial",group:"G5",day:"Sunday",period:5,place:"C404"},
+    {subject:"AC",type:"Tutorial",group:"G5",day:"Sunday",period:5,place:"C405"},
+
+    {subject:"AC",type:"Lab",group:"G1",day:"Thursday",period:7,place:"Lab",biweekly:true},
+    {subject:"AC",type:"Lab",group:"G2",day:"Monday",period:3,place:"Lab",biweekly:true},
+    {subject:"AC",type:"Lab",group:"G3",day:"Tuesday",period:5,place:"Lab",biweekly:true},
+    {subject:"AC",type:"Lab",group:"G4",day:"Sunday",period:3,place:"Lab",biweekly:true},
+    {subject:"AC",type:"Lab",group:"G5",day:"Sunday",period:3,place:"Lab",biweekly:true}
+  ];
+  DATA.forEach(function(d,i){ d.id = "opt_" + i; });
+
+  // Detect same-slot pairings within each group's table:
+  // - same subject+type sharing a slot but different rooms  -> parallel sections (Sec 1 / Sec 2)
+  // - different subject/type sharing a slot                 -> the source table drew a diagonal
+  //                                                              split cell, i.e. the two alternate
+  //                                                              on odd/even weeks (biweekly)
+  function annotateData(){
+    var byCell = {};
+    DATA.forEach(function(d){
+      var key = d.group + "|" + d.day + "|" + d.period;
+      (byCell[key] = byCell[key] || []).push(d);
+    });
+    Object.keys(byCell).forEach(function(key){
+      var arr = byCell[key];
+      if (arr.length < 2) return;
+      var sameSubjType = arr.every(function(d){ return d.subject === arr[0].subject && d.type === arr[0].type; });
+      var sameType = arr.every(function(d){ return d.type === arr[0].type; });
+      if (sameSubjType) {
+        // same course, same component, different room -> parallel sections
+        arr.forEach(function(d, i){ d.sectionLabel = "Sec " + (i + 1); });
+      } else if (sameType) {
+        // different subject, same component (e.g. DB Lab / OS Lab sharing a slot) -> the group
+        // simply splits into two batches that swap rooms; each stays a normal, separate option
+        // (picking both for the same slot is a real conflict, not a biweekly alternation).
+        arr.forEach(function(d){ d.batchPaired = true; d.pairKey = key; });
+      } else {
+        // different subject AND different component sharing one slot -> the source table drew
+        // a diagonal split cell for this: the two alternate on odd/even weeks (biweekly)
+        arr.forEach(function(d){
+          d.biweekly = true;
+          d.pairKey = key;
+          d.altWith = arr.filter(function(x){ return x !== d; })
+                         .map(function(x){ return x.subject + " " + x.type; })
+                         .join(" / ");
+        });
+      }
+    });
+  }
+  annotateData();
+
+  // DB Lab / OS Lab: each group splits into two batches that swap rooms across two slots
+  // (flagged above via batchPaired + pairKey). A batch that does DB in the earlier slot does
+  // OS in the later slot, and vice versa — so "Lab 1" for OS must be matched to whichever DB
+  // slot is its OWN batch's other half, not just to whichever slot comes first on the clock.
+  // Any extra DB slot that isn't part of that swap is the diagonally-marked biweekly lab.
+  function assignLabLabels(){
+    var dayIndex = {Saturday:0, Sunday:1, Monday:2, Tuesday:3, Wednesday:4, Thursday:5};
+
+    DATA.filter(function(d){ return d.type === "Lab" && (d.subject === "DB" || d.subject === "OS") && !d.batchPaired; })
+        .forEach(function(d){ d.biweekly = true; d.type = "Biweekly Lab"; });
+
+    var byGroup = {};
+    DATA.filter(function(d){ return d.subject === "DB" && d.type === "Lab" && d.batchPaired; })
+        .forEach(function(d){ (byGroup[d.group] = byGroup[d.group] || []).push(d); });
+
+    Object.keys(byGroup).forEach(function(g){
+      var arr = byGroup[g];
+      arr.sort(function(a, b){ return (dayIndex[a.day] - dayIndex[b.day]) || (a.period - b.period); });
+      arr.forEach(function(d, i){ d.sectionLabel = "Lab " + (i + 1); });
+      arr.forEach(function(d){
+        var osPartner = DATA.filter(function(x){ return x.subject === "OS" && x.type === "Lab" && x.pairKey === d.pairKey; })[0];
+        if (osPartner){
+          var otherHalf = arr.filter(function(x){ return x !== d; })[0];
+          osPartner.sectionLabel = otherHalf.sectionLabel;
+        }
+      });
+    });
+  }
+  assignLabLabels();
+
+  function shortType(t){
+    return t === "Lecture" ? "Lec" : (t === "Tutorial" ? "Tut" : (t === "Lab" ? "Lab" : t));
+  }
+
+  var custom = [];       // user-added sessions: {id, subject, type, day, period, place}
+  var selected = {};     // key "SUBJECT|Type" -> option id
+  var STORE_KEY = "cce7_timetable_v1";
+
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        selected = s.selected || {};
+        custom = s.custom || [];
+      }
+    } catch(e){ /* ignore, start fresh */ }
+  }
+  function saveState(){
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({selected: selected, custom: custom}));
+    } catch(e){ /* storage unavailable, silently skip */ }
+  }
+
+  function optionsFor(subject, type){
+    return DATA.filter(function(d){ return d.subject === subject && d.type === type; });
+  }
+  function typesFor(subject){
+    var set = {};
+    DATA.forEach(function(d){ if (d.subject === subject) set[d.type] = true; });
+    return Object.keys(set).sort(function(a,b){
+      var order = {Lecture:0, Tutorial:1, Lab:2, "Biweekly Lab":3};
+      return order[a]-order[b];
+    });
+  }
+  function findOpt(id){
+    if (id.indexOf("custom_") === 0){
+      return custom.filter(function(c){ return c.id === id; })[0];
+    }
+    return DATA.filter(function(d){ return d.id === id; })[0];
+  }
+
+  // ---------- build subject cards ----------
+  var cardsEl = document.getElementById("cards");
+  function buildCards(){
+    cardsEl.innerHTML = "";
+    SUBJECTS.forEach(function(sub){
+      var types = typesFor(sub.code);
+      var card = document.createElement("div");
+      card.className = "card";
+      card.style.setProperty("--card-color", "var(--sub-" + sub.code + ")");
+      var h = document.createElement("h3");
+      h.innerHTML = sub.code + " <small>" + sub.name + "</small>";
+      card.appendChild(h);
+
+      types.forEach(function(type){
+        var opts = optionsFor(sub.code, type);
+        var field = document.createElement("div");
+        field.className = "field";
+        var label = document.createElement("label");
+        label.textContent = type;
+        field.appendChild(label);
+        var sel = document.createElement("select");
+        sel.dataset.key = sub.code + "|" + type;
+        var blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = "— not selected —";
+        sel.appendChild(blank);
+        opts.forEach(function(o){
+          var op = document.createElement("option");
+          op.value = o.id;
+          var roomPart = o.sectionLabel ? (o.sectionLabel + " · " + o.place) : o.place;
+          var bwNote = (o.biweekly && type !== "Biweekly Lab") ?
+            (" · biweekly" + (o.altWith ? " (alt: " + o.altWith + ")" : " (every other week)")) :
+            (o.biweekly ? " (every other week)" : "");
+          op.textContent = o.day + " " + PERIODS.filter(function(p){return p.n===o.period;})[0].label +
+            " · " + roomPart + (o.instr ? " · " + o.instr : "") + bwNote +
+            " (" + o.group + ")";
+          sel.appendChild(op);
+        });
+        var key = sub.code + "|" + type;
+        sel.value = selected[key] || "";
+        sel.addEventListener("change", function(){
+          if (sel.value) selected[key] = sel.value; else delete selected[key];
+          saveState();
+          renderGrid();
+        });
+        field.appendChild(sel);
+        card.appendChild(field);
+      });
+
+      cardsEl.appendChild(card);
+    });
+  }
+
+  // ---------- quick fill by group ----------
+  document.getElementById("applyGroup").addEventListener("click", function(){
+    var g = document.getElementById("groupSelect").value;
+    if (!g) return;
+    SUBJECTS.forEach(function(sub){
+      var lec = DATA.filter(function(d){ return d.subject===sub.code && d.type==="Lecture" && d.group===g; })[0];
+      if (lec){ selected[sub.code+"|Lecture"] = lec.id; }
+    });
+    saveState();
+    buildCards();
+    renderGrid();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    selected = {};
+    custom = [];
+    saveState();
+    buildCards();
+    renderGrid();
+  });
+
+  document.getElementById("printBtn").addEventListener("click", function(){ window.print(); });
+
+  // ---------- custom session form ----------
+  var cDay = document.getElementById("cDay");
+  DAYS.forEach(function(d){ var o=document.createElement("option"); o.value=d; o.textContent=d; cDay.appendChild(o); });
+  var cPeriod = document.getElementById("cPeriod");
+  PERIODS.forEach(function(p){ var o=document.createElement("option"); o.value=p.n; o.textContent=p.label+" ("+p.time+")"; cPeriod.appendChild(o); });
+
+  document.getElementById("addCustom").addEventListener("click", function(){
+    var subject = document.getElementById("cSubject").value.trim();
+    if (!subject){ document.getElementById("cSubject").focus(); return; }
+    var item = {
+      id: "custom_" + Date.now() + "_" + Math.floor(Math.random()*1000),
+      subject: subject,
+      type: document.getElementById("cType").value,
+      day: cDay.value,
+      period: parseInt(cPeriod.value, 10),
+      place: document.getElementById("cPlace").value.trim(),
+      biweekly: document.getElementById("cBiweekly").checked
+    };
+    custom.push(item);
+    selected["CUSTOM|" + item.id] = item.id;
+    document.getElementById("cSubject").value = "";
+    document.getElementById("cPlace").value = "";
+    document.getElementById("cBiweekly").checked = false;
+    saveState();
+    renderGrid();
+  });
+
+  // ---------- grid rendering ----------
+  var gridTable = document.getElementById("gridTable");
+
+  function buildGridSkeleton(){
+    var thead = document.createElement("thead");
+    var htr = document.createElement("tr");
+    var th0 = document.createElement("th");
+    th0.textContent = "";
+    th0.className = "timecol";
+    htr.appendChild(th0);
+    DAYS.forEach(function(d){
+      var th = document.createElement("th");
+      th.textContent = d;
+      htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+
+    var tbody = document.createElement("tbody");
+    PERIODS.forEach(function(p){
+      var tr = document.createElement("tr");
+      var tc = document.createElement("td");
+      tc.className = "timecol";
+      tc.innerHTML = p.label + "<br>" + p.time;
+      tr.appendChild(tc);
+      DAYS.forEach(function(d){
+        var td = document.createElement("td");
+        td.className = "cell";
+        td.dataset.day = d;
+        td.dataset.period = p.n;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    gridTable.innerHTML = "";
+    gridTable.appendChild(thead);
+    gridTable.appendChild(tbody);
+  }
+
+  function subjectColor(subjectCode){
+    var known = SUBJECTS.some(function(s){return s.code===subjectCode;});
+    return "var(--sub-" + (known ? subjectCode : "CUSTOM") + ")";
+  }
+
+  function renderGrid(){
+    buildGridSkeleton();
+    var chosen = Object.keys(selected).map(function(k){ return findOpt(selected[k]); }).filter(Boolean);
+
+    // group by day+period to find conflicts
+    var byCell = {};
+    chosen.forEach(function(o){
+      var key = o.day + "|" + o.period;
+      (byCell[key] = byCell[key] || []).push(o);
+    });
+
+    function attachRemove(wrap, o){
+      if (String(o.id).indexOf("custom_") !== 0) return;
+      var rm = document.createElement("button");
+      rm.className = "rm";
+      rm.textContent = "×";
+      rm.title = "Remove";
+      rm.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        custom = custom.filter(function(c){ return c.id !== o.id; });
+        delete selected["CUSTOM|" + o.id];
+        saveState();
+        renderGrid();
+      });
+      wrap.appendChild(rm);
+    }
+
+    Object.keys(byCell).forEach(function(key){
+      var arr = byCell[key];
+      var parts = key.split("|");
+      var day = parts[0], period = parseInt(parts[1], 10);
+      var td = gridTable.querySelector('td[data-day="'+day+'"][data-period="'+period+'"]');
+      if (!td) return;
+
+      var mutualBiweekly = arr.length === 2 && arr[0].biweekly && arr[1].biweekly && arr[0].pairKey && arr[0].pairKey === arr[1].pairKey;
+
+      if (mutualBiweekly){
+        var a = arr[0], b = arr[1];
+        var split = document.createElement("div");
+        split.className = "sess-split";
+        split.innerHTML =
+          "<div class='tri tri-a' style='background:" + subjectColor(a.subject) + "'></div>" +
+          "<div class='tri tri-b' style='background:" + subjectColor(b.subject) + "'></div>" +
+          "<div class='seam'></div>" +
+          "<span class='bw-badge'>biweekly</span>" +
+          "<span class='lab-a'>" + a.subject + " " + shortType(a.type) + "</span>" +
+          "<span class='lab-b'>" + b.subject + " " + shortType(b.type) + "</span>";
+        td.appendChild(split);
+        return;
+      }
+
+      var isConflict = arr.length > 1;
+      arr.forEach(function(o, idx){
+        var wrap = document.createElement("div");
+        wrap.className = "sess" + (isConflict ? " conflict" : "") + (o.biweekly && !isConflict ? " biweekly-single" : "");
+        wrap.style.setProperty("--s-color", subjectColor(o.subject));
+        if (isConflict){
+          var w = (100 / arr.length);
+          wrap.style.left = (idx * w + 2) + "%";
+          wrap.style.right = "auto";
+          wrap.style.width = (w - 4) + "%";
+        }
+        var place = o.place ? o.place : "";
+        var secLabel = o.sectionLabel ? (o.sectionLabel + " · ") : "";
+        wrap.innerHTML = "<b>" + o.subject + "</b><span class='t'>" + secLabel + o.type + (place ? " · " + place : "") + "</span>" +
+          (o.biweekly && !isConflict ? "<span class='bw-tag'>biweekly</span>" : "");
+        attachRemove(wrap, o);
+        td.appendChild(wrap);
+      });
+    });
+
+    // legend
+    var legend = document.getElementById("legend");
+    var used = {};
+    chosen.forEach(function(o){ used[o.subject] = true; });
+    legend.innerHTML = "";
+    Object.keys(used).forEach(function(code){
+      var span = document.createElement("span");
+      var known = SUBJECTS.filter(function(s){return s.code===code;})[0];
+      span.innerHTML = "<span class='dot' style='background:" + subjectColor(code) + "'></span>" + (known ? known.name : code);
+      legend.appendChild(span);
+    });
+
+    // conflicts panel (a mutually-paired biweekly slot is not a real conflict)
+    var conflictKeys = Object.keys(byCell).filter(function(k){
+      var arr = byCell[k];
+      if (arr.length <= 1) return false;
+      var mutual = arr.length === 2 && arr[0].biweekly && arr[1].biweekly && arr[0].pairKey && arr[0].pairKey === arr[1].pairKey;
+      return !mutual;
+    });
+    var panel = document.getElementById("conflicts");
+    if (conflictKeys.length){
+      panel.style.display = "block";
+      var items = conflictKeys.map(function(k){
+        var parts = k.split("|");
+        var day = parts[0], period = parseInt(parts[1],10);
+        var pl = PERIODS.filter(function(p){return p.n===period;})[0];
+        var names = byCell[k].map(function(o){ return o.subject + " (" + o.type + ")"; }).join(" and ");
+        return "<li>" + day + ", " + pl.label + " — " + names + " overlap.</li>";
+      }).join("");
+      panel.innerHTML = "<h4>Time conflicts</h4><ul>" + items + "</ul>";
+    } else {
+      panel.style.display = "none";
+      panel.innerHTML = "";
+    }
+  }
+
+  // include custom sessions in the same "options" lookup by faking them into DATA-like lookups
+  var origFindOpt = findOpt;
+
+  loadState();
+  buildCards();
+  renderGrid();
+})();
+</script>
+</body>
+</html>
